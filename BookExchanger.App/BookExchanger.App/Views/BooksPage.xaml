@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BookExchanger.App.Views.BooksPage"
+             Shell.NavBarIsVisible="False">
+    <CollectionView ItemsSource="{Binding Books}"
+                    x:Name="collectionView">
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <SwipeView>
+                    <SwipeView.LeftItems>
+                        <SwipeItem Text="Favorite"
+                                   IconImageSource="fav.png"
+                                   BackgroundColor="LightGreen"
+                                   Command="{Binding Source={x:Reference collectionView}, Path=BindingContext.FavoriteCommand}"
+                                   CommandParameter="{Binding}" />
+                    </SwipeView.LeftItems>
+                    <Grid Padding="10"
+                      RowDefinitions="Auto, *"
+                      ColumnDefinitions="Auto, *">
+                        <Image Source="{Binding Uri}"
+                           Grid.RowSpan="2"
+                           HeightRequest="64"
+                           WidthRequest="64"
+                           Aspect="Fill" />
+                        <Label Grid.Column="1"
+                           x:Name="lbBookName"
+                           Text="{Binding Name}"
+                           FontAttributes="Bold" />
+                        <Label Grid.Column="1"
+                           Grid.Row="1"
+                           Text="{Binding Level}"
+                           VerticalOptions="End" />
+                    </Grid>
+                </SwipeView>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>
