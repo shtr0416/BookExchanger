@@ -24,5 +24,29 @@ namespace BookExchanger.Service.Exceptions
             UserPassRequired,
             UserIdRequired
         }
+
+        public string ErrorMsgConvert()
+        {
+            switch (Type)
+            {
+                case ExceptionType.UserExists:
+                    return "User exists";
+
+                case ExceptionType.UserNotFound:
+                    return "User not found";
+
+                case ExceptionType.UserNameRequired:
+                    return "User name is required";
+
+                case ExceptionType.UserPassRequired:
+                    return "User password is required";
+
+                case ExceptionType.UserIdRequired:
+                    return "User id is required";
+
+                default:
+                    return "UnknowException";
+            }
+        }
     }
 }

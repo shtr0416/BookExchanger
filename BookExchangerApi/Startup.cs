@@ -1,18 +1,13 @@
 using BookExchangerApi.App;
+using BookExchangerApi.Jwt;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookExchangerApi
 {
@@ -34,7 +29,9 @@ namespace BookExchangerApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BookExchangerApi", Version = "v1" });
             });
 
-            DependencyService.Register(services);
+            services.Configure<JwtConfig>(Configuration.GetSection("JWTConfig"));
+            services.DependencyRegister();
+            services.JwtRegister(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,10 +44,8 @@ namespace BookExchangerApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookExchangerApi v1"));
             }
 
-            //app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

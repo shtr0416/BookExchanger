@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookExchanger.Service.Dto.User.Get;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,33 @@ namespace BookExchanger.Service.Services
                 return false;
 
             return true;
+        }
+
+        public async Task<ResponseDto> Login((string uname, string upass) loginInfo)
+        {
+            if (string.IsNullOrEmpty(loginInfo.uname))
+                throw new Exceptions.LoginException(nameof(loginInfo.uname), Exceptions.LoginException.LoginExceptionType.UserNameRequired);
+            if (string.IsNullOrEmpty(loginInfo.upass))
+                throw new Exceptions.LoginException(nameof(loginInfo.upass), Exceptions.LoginException.LoginExceptionType.UserPassRequired);
+
+            var user = await _userService.GetAsync(
+                condition: new KeyValuePair<UserService.GetFuncCondtionType, string>(UserService.GetFuncCondtionType.UserName, loginInfo.uname),
+                isActive: true);
+
+            if (user is null || string.IsNullOrEmpty(user.UserId))
+                return null;
+
+            var originalPassword = user.UserPass;
+            var salt = user.Salt;
+
+            var isConfirmed = Auth.Service.PasswordService.Confirm(loginInfo.upass, originalPassword, salt);
+
+            if (!isConfirmed)
+                return null;
+
+            var response = ResponseDto.FromDbEntity(user);
+
+            return response;
         }
 
         public async Task<string> Register(Dto.User.Create.RequestDto request)
